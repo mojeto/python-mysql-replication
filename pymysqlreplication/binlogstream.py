@@ -139,7 +139,12 @@ class BinLogStreamReader(object):
             # valid, if not, get the current position from master
             if self.log_file is None or self.log_pos is None:
                 cur = self._stream_connection.cursor()
-                cur.execute("SHOW MASTER STATUS")
+                if self.__resume_stream:
+                    cur.execute("SHOW MASTER STATUS")
+
+                else:
+                    cur.execute("SHOW MASTER LOGS")
+
                 self.log_file, self.log_pos = cur.fetchone()[:2]
                 cur.close()
 
